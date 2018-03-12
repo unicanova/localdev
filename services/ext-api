@@ -1,0 +1,5 @@
+export BRANCH_NAME=master
+# export COMMIT_SHA=
+# export FAILOVER_BRANCH=master
+# export REMOTE_CLUSTER=cluster.local
+# export REMOTE_DOMAINS="${BRANCH}".svc."${REMOTE_CLUSTER}","${FAILOVER_BRANCH}".svc."${REMOTE_CLUSTER}"

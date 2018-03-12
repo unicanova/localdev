@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: openvpn
+  namespace: kube-system
+  labels:
+    k8s-app: openvpn
+spec:
+  selector:
+    matchLabels:
+      app: openvpn
+  template:
+    metadata:
+      labels:
+        app: openvpn
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      hostNetwork: true
+      containers:
+      - name: openvpn
+        image: unicanova/openvpn-client:v0.0.1 
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_TIME"]
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            cpu: 200m
+            memory: 500Mi
+        volumeMounts:
+        - name: openvpn-config
+          mountPath: /etc/openvpn
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: openvpn-config 
+        secret:
+          secretName: openvpn-conf
