@@ -23,8 +23,6 @@ TRY_CHECKOUT_IF_DIRTY=$(echo "$TRY_CHECKOUT_IF_DIRTY"|tr '[:upper:]' '[:lower:]'
 #kubectl -n kube-system exec DNS_POD -- kill -SIGUSR1 1
 #helm install --debug --dry-run --namespace stage --set global.release=stage --set global.commit=93eae82fdbaf2cb5995fa94b083f0b6bfd745d5d --set global.env=localdev --set global.type=local --set global.ci_url=service-bus --set remoteDomains={$REMOTE_DOMAINS} .helm/
 
-HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
-
 CHART_ARGS="--set global.release=${BRANCH} --set global.commit=${COMMIT_SHA} --set global.env=${BRANCH} --set global.type=local --set global.ci_url=${SERVICE_NAME}"
 
 REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
@@ -56,7 +54,11 @@ function installChart() {
 
 function chartInstalled() {
   #TODO: Kkalynovskyi create function that check if chart with given name exists
-  return 0
+  if helm get "${SERVICE_NAME}"-"${BRANCH}" > /dev/null 2>&1; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 function downloadChart() {
