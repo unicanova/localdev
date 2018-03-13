@@ -42,7 +42,7 @@ function installChart() {
               --set global.ci_url=${SERVICE_NAME}"
   REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
   if [ -n "$REMOTE_DOMAINS" ]; then
-    CHART_ARGS="$CHART_ARGS --set remoteDomains={$REMOTE_DOMAINS}"
+    CHART_ARGS="$CHART_ARGS --set remoteDomains=${REMOTE_DOMAINS}"
   fi
   echo $CHART_ARGS
   $HELM_BIN install --debug --dry-run --name "${SERVICE_NAME}"-"${BRANCH}"\
@@ -53,7 +53,6 @@ function installChart() {
 }
 
 function chartInstalled() {
-  #TODO: Kkalynovskyi create function that check if chart with given name exists
   if helm get "${SERVICE_NAME}"-"${BRANCH}" > /dev/null 2>&1; then
     return 0
   else
@@ -71,14 +70,14 @@ function downloadChart() {
     git clone --quiet "$PROJECT_GIT_REPO" "$BASE_GIT_DIR/$SERVICE_NAME" && \
     return 0;
   fi
-  echo "ERROR == Could not clone project repository $SERVICE_NAME =="
+  echo "ERROR == Could not clone project repository ${SERVICE_NAME} =="
   exit 1;
 }
 
 function getLatestSha() {
   git $LOCALDEV_GIT_CONF fetch --quiet || exit 2
   LATEST_BRANCH_SHA="$(git $LOCALDEV_GIT_CONF rev-parse origin/$BRANCH)" || \
-  echo "WARNING == Failed to get latest SHA in git repo $LOCALDEV_GIT_CONF =="
+  echo "WARNING == Failed to get latest SHA in git repo ${LOCALDEV_GIT_CONF} =="
   COMMIT_SHA="${COMMIT_SHA:-$LATEST_BRANCH_SHA}"
   echo "== Commit SHA used for checkout is ${COMMIT_SHA} =="
 }
