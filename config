@@ -1,7 +1,9 @@
 # Section to authenticate against registry in gitlab
-GITLAB_USERNAME="user"
-GITLAB_REGISTRY_TOKEN="my_token"
-GITLAB_EMAIL="kkalynovskyi@gmail.com"
+export LOCALDEV_REGISTRY_USERNAME="user"
+export LOCALDEV_REGISTRY_PASSWORD="my_token"
+export LOCALDEV_REGISTRY_SERVER="registry.gruzer.ru"
+export GITLAB_EMAIL="kkalynovskyi@gmail.com"
+
 
 
 # Binary Configs

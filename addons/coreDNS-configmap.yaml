@@ -5,7 +5,7 @@ data:
         errors
         log
         health
-        kubernetes dev.local {
+        kubernetes . {
             pods insecure
             upstream /etc/resolv.conf
             fallthrough
