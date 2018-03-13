@@ -53,11 +53,14 @@ function installChart() {
 }
 
 function chartInstalled() {
-  if helm get "${SERVICE_NAME}"-"${BRANCH}" > /dev/null 2>&1; then
-    return 0
-  else
-    return 1
-  fi
+  helm get "${SERVICE_NAME}"-"${BRANCH}" > /dev/null 2>&1
+  rc=$?
+  case $rc in
+    1|0) return $rc
+    ;;
+    *)  echo "== Could not determine status of helm chart =="; exit $rc
+    ;;
+  esac
 }
 
 function downloadChart() {
