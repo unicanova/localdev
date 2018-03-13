@@ -23,8 +23,6 @@ TRY_CHECKOUT_IF_DIRTY=$(echo "$TRY_CHECKOUT_IF_DIRTY"|tr '[:upper:]' '[:lower:]'
 #kubectl -n kube-system exec DNS_POD -- kill -SIGUSR1 1
 #helm install --debug --dry-run --namespace stage --set global.release=stage --set global.commit=93eae82fdbaf2cb5995fa94b083f0b6bfd745d5d --set global.env=localdev --set global.type=local --set global.ci_url=service-bus --set remoteDomains={$REMOTE_DOMAINS} .helm/
 
-HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
-
 CHART_ARGS="--set global.release=${BRANCH} --set global.commit=${COMMIT_SHA} --set global.env=${BRANCH} --set global.type=local --set global.ci_url=${SERVICE_NAME}"
 
 REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
@@ -44,7 +42,7 @@ function installChart() {
               --set global.ci_url=${SERVICE_NAME}"
   REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
   if [ -n "$REMOTE_DOMAINS" ]; then
-    CHART_ARGS="$CHART_ARGS --set remoteDomains={$REMOTE_DOMAINS}"
+    CHART_ARGS="$CHART_ARGS --set remoteDomains=${REMOTE_DOMAINS}"
   fi
   echo $CHART_ARGS
   $HELM_BIN install --debug --dry-run --name "${SERVICE_NAME}"-"${BRANCH}"\
@@ -55,8 +53,14 @@ function installChart() {
 }
 
 function chartInstalled() {
-  #TODO: Kkalynovskyi create function that check if chart with given name exists
-  return 0
+  helm get "${SERVICE_NAME}"-"${BRANCH}" > /dev/null 2>&1
+  rc=$?
+  case $rc in
+    1|0) return $rc
+    ;;
+    *)  echo "== Could not determine status of helm chart =="; exit $rc
+    ;;
+  esac
 }
 
 function downloadChart() {
@@ -69,14 +73,14 @@ function downloadChart() {
     git clone --quiet "$PROJECT_GIT_REPO" "$BASE_GIT_DIR/$SERVICE_NAME" && \
     return 0;
   fi
-  echo "ERROR == Could not clone project repository $SERVICE_NAME =="
+  echo "ERROR == Could not clone project repository ${SERVICE_NAME} =="
   exit 1;
 }
 
 function getLatestSha() {
   git $LOCALDEV_GIT_CONF fetch --quiet || exit 2
   LATEST_BRANCH_SHA="$(git $LOCALDEV_GIT_CONF rev-parse origin/$BRANCH)" || \
-  echo "WARNING == Failed to get latest SHA in git repo $LOCALDEV_GIT_CONF =="
+  echo "WARNING == Failed to get latest SHA in git repo ${LOCALDEV_GIT_CONF} =="
   COMMIT_SHA="${COMMIT_SHA:-$LATEST_BRANCH_SHA}"
   echo "== Commit SHA used for checkout is ${COMMIT_SHA} =="
 }
