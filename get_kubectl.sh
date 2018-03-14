@@ -6,8 +6,8 @@ DOWNLOAD_BINARY=kubectl
 downloadFile() {
   HASH_TYPE=md5
   KUBECTL_STABLE_VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
-  KUBECTL_VERSION=${KUBECTL_VERSION:-$KUBECTL_STABLE_VERSION}
-  DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${OS}/${ARCH}/${DOWNLOAD_BINARY}"
+  BINARY_VERSION=${BINARY_VERSION:-$KUBECTL_STABLE_VERSION}
+  DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/${BINARY_VERSION}/bin/${OS}/${ARCH}/${DOWNLOAD_BINARY}"
   CHECKSUM_URL="$DOWNLOAD_URL.$HASH_TYPE"
   TMP_ROOT="$(mktemp -dt ${DOWNLOAD_BINARY}-XXXXXX)"
   TMP_FILE="$TMP_ROOT/$DOWNLOAD_BINARY"
@@ -31,4 +31,5 @@ source lib/_install_bin.sh
 initArch
 initOS
 downloadFile
+checkInstalledVersion
 installFile
