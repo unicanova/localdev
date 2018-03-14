@@ -29,7 +29,7 @@ checkInstalledVersion() {
       echo "${DOWNLOAD_BINARY} ${version} is already ${BINARY_VERSION}"
       return 0
     else
-      echo "${DOWNLOAD_BINARY} ${BINARY_VERSION} is available. Changing from version ${version}."
+      echo "${DOWNLOAD_BINARY} ${BINARY_VERSION} is available. To change, manually delete old ${DOWNLAOD_BINARY} and rerun if required."
       return 1
     fi
   else

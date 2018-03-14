@@ -31,4 +31,5 @@ source lib/_install_bin.sh
 initArch
 initOS
 downloadFile
+checkInstalledVersion
 installFile
