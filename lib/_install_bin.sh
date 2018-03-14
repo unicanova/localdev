@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 installFile() {
-  echo hash type is $HASH_TYPE
   if [ $HASH_TYPE == "md5" ]; then
     local sum=$(md5sum ${TMP_FILE} | awk '{print $1}')
   else [ $HASH_TYPE == "sha256" ]
