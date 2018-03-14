@@ -10,5 +10,8 @@ for f_object in $file_objects; do
   unset COMMIT_SHA
   unset LOCALDEV_FAILOVER_BRANCH
   unset REMOTE_CLUSTER
-  source $f_object && ./helm.sh
+  source $f_object && ./helm.sh && \
+  echo "== chart from $SERVICE_NAME from $f_object installed =="
 done
+
+exit 0
