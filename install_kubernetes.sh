@@ -52,6 +52,7 @@ function install_minikube() {
     local local_mount_dir="~/.localdev/services/"
     local remote_mount_dir="/home/services/"
     echo Installing Kubernetes with minikube vm-driver "${MINIKUBE_VM_DRIVER}"
+    mkdir -p $local_mount_dir
     minikube start --vm-driver "${MINIKUBE_VM_DRIVER}" \
                    --feature-gates=CustomPodDNS=true \
                    --dns-domain "${MINIKUBE_DNS_DOMAIN}" \
