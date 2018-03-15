@@ -4,6 +4,7 @@ BASE_GIT_DIR=${BASE_GIT_DIR:-~/.localdev}
 HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
 _REPO_HELM_CHART_DIR=.helm
 LOCALDEV_BRANCH=${LOCALDEV_BRANCH:-master}
+: ${KUBECTL:="/usr/local/bin/kubectl"}
 
 function installChart() {
   CHART_ARGS="--set global.release=${LOCALDEV_BRANCH} \
@@ -83,9 +84,9 @@ function gitIsClean() {
 
 function createSecret() {
   local secert_name="${LOCALDEV_REGISTRY_SECRET_NAME:-regsecret}"
-  kubectl get ns "${LOCALDEV_BRANCH}" || kubectl create ns "${LOCALDEV_BRANCH}"
-  if ! kubectl get secret "${secert_name}" --namespace "${LOCALDEV_BRANCH}" > /dev/null 2>&1; then
-    kubectl create secret docker-registry "${secert_name}" \
+  ${KUBECTL} get ns "${LOCALDEV_BRANCH}" || ${KUBECTL} create ns "${LOCALDEV_BRANCH}"
+  if ! ${KUBECTL} get secret "${secert_name}" --namespace "${LOCALDEV_BRANCH}" > /dev/null 2>&1; then
+    ${KUBECTL} create secret docker-registry "${secert_name}" \
                                           --docker-server="${LOCALDEV_REGISTRY_SERVER}" \
                                           --docker-username="${LOCALDEV_REGISTRY_USERNAME=}" \
                                           --docker-password="${LOCALDEV_REGISTRY_PASSWORD}" \
