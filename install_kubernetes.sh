@@ -10,9 +10,6 @@
 KUBECTL_OPTS=${KUBECTL_OPTS:-}
 MINIKUBE_CLUSTER_STATUS=$(minikube status | awk '/cluster/ {print $2}')
 
-local local_mount_dir="~/.localdev/services/"
-local remote_mount_dir="/home/services/"
-
 set -e
 
 # $1 string with json or yaml.
@@ -52,6 +49,8 @@ function install_minikube() {
     echo == Kubernetes minikube is already running, not installing it ==
     return 0
   else
+    local local_mount_dir="~/.localdev/services/"
+    local remote_mount_dir="/home/services/"
     echo Installing Kubernetes with minikube vm-driver "${MINIKUBE_VM_DRIVER}"
     minikube start --vm-driver "${MINIKUBE_VM_DRIVER}" \
                    --feature-gates=CustomPodDNS=true \
