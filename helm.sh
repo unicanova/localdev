@@ -1,24 +1,22 @@
 #!/usr/bin/env bash
 
-BASE_GIT_DIR=~/.localdev
+BASE_GIT_DIR=${BASE_GIT_DIR:-~/.localdev}
 HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
-#SERVICE_NAME=service-bus
-#GIT_REPO_PROJECT_BASE=git@gitlab.gruzer.ru:apps
 _REPO_HELM_CHART_DIR=.helm
 LOCALDEV_BRANCH=${LOCALDEV_BRANCH:-master}
-#REMOTE_CLUSTER=cluster.local
 
 function installChart() {
   CHART_ARGS="--set global.release=${LOCALDEV_BRANCH} \
               --set global.commit=${COMMIT_SHA} \
               --set global.env=${LOCALDEV_BRANCH} \
               --set global.type=local \
-              --set global.ci_url=${SERVICE_NAME}"
+              --set global.ci_url=${SERVICE_NAME} \
+              --set global.username=${LOCALDEV_USERNAME}"
   REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
   if [ -n "$REMOTE_DOMAINS" ]; then
     CHART_ARGS="$CHART_ARGS --set remoteDomains={$REMOTE_DOMAINS}"
   fi
-  $HELM_BIN install --debug --dry-run --name "${SERVICE_NAME}"-"${LOCALDEV_BRANCH}" \
+  $HELM_BIN install --debug --name "${SERVICE_NAME}"-"${LOCALDEV_BRANCH}" \
                     --namespace "${LOCALDEV_BRANCH}" ${CHART_ARGS} \
                     "${BASE_GIT_DIR}/${SERVICE_NAME}/${_REPO_HELM_CHART_DIR}" && \
                     return 0;
@@ -60,6 +58,7 @@ function getLatestSha() {
 function checkoutGit() {
   git $LOCALDEV_GIT_CONF checkout --force "$COMMIT_SHA" && \
   echo "== Checked out commit with SHA ${COMMIT_SHA} ==" && return 0
+  echo "== Failed to checkout SHA ${COMMIT_SHA} =="
   return 1;
 }
 
@@ -97,29 +96,34 @@ function createSecret() {
   fi
 }
 
-set -e
+function verifyHelm() {
+  if [ -z "$SERVICE_NAME" ]; then
+    echo "== Service name to be deployed is not defined =="
+    exit 3
+  fi
+  return 0
+}
 
-if [ -z "$SERVICE_NAME" ]; then
-  echo "== Service name to be deployed is not defined =="
-  exit 3
-fi
+set -e
 
 PROJECT_GIT_REPO="${GIT_REPO_PROJECT_BASE}/${SERVICE_NAME}.git"
 REMOTE_DOMAINS=$(echo "$REMOTE_DOMAINS" | awk '{gsub(/^ +| +$/,"")} {print $0}')
 LOCALDEV_GIT_CONF="--git-dir=${BASE_GIT_DIR}/${SERVICE_NAME}/.git --work-tree=${BASE_GIT_DIR}/${SERVICE_NAME}"
 TRY_CHECKOUT_IF_DIRTY=$(echo "$TRY_CHECKOUT_IF_DIRTY"|tr '[:upper:]' '[:lower:]')
-REMOTE_DOMAINS="${LOCALDEV_BRANCH}".svc."${REMOTE_CLUSTER}","${LOCALDEV_FAILOVER_BRANCH}".svc."${REMOTE_CLUSTER}"
 mkdir -p $BASE_GIT_DIR
-if [ -n "$REMOTE_DOMAINS" ]; then
+if [ -n "$REMOTE_CLUSTER" ]; then
+  LOCALDEV_FAILOVER_BRANCH=${LOCALDEV_FAILOVER_BRANCH:-$LOCALDEV_BRANCH}
+  REMOTE_DOMAINS="${LOCALDEV_BRANCH}".svc."${REMOTE_CLUSTER}","${LOCALDEV_FAILOVER_BRANCH}".svc."${REMOTE_CLUSTER}",svc."${REMOTE_CLUSTER}"
   CHART_ARGS="$CHART_ARGS --set remoteDomains={$REMOTE_DOMAINS}"
 fi
 
+verifyHelm
 downloadChart
+getLatestSha
 if gitIsClean or $TRY_CHECKOUT_IF_DIRTY; then
   checkoutGit
 fi
 
-getLatestSha
 createSecret
 if chartInstalled; then
   echo "== Chart ${SERVICE_NAME}-${LOCALDEV_BRANCH} already exists, please delete manually if you want it reinstalled =="
