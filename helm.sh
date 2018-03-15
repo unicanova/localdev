@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
-BASE_GIT_DIR=/home/kkalynovskyi/projects/gruzer/
+BASE_GIT_DIR=${BASE_GIT_DIR:-~/.localdev}
 HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
-#SERVICE_NAME=service-bus
-#GIT_REPO_PROJECT_BASE=git@gitlab.gruzer.ru:apps
 _REPO_HELM_CHART_DIR=.helm
 LOCALDEV_BRANCH=${LOCALDEV_BRANCH:-master}
-#REMOTE_CLUSTER=cluster.local
 
 function installChart() {
   CHART_ARGS="--set global.release=${LOCALDEV_BRANCH} \
@@ -61,6 +58,7 @@ function getLatestSha() {
 function checkoutGit() {
   git $LOCALDEV_GIT_CONF checkout --force "$COMMIT_SHA" && \
   echo "== Checked out commit with SHA ${COMMIT_SHA} ==" && return 0
+  echo "== Failed to checkout SHA ${COMMIT_SHA} =="
   return 1;
 }
 
@@ -121,11 +119,11 @@ fi
 
 verifyHelm
 downloadChart
+getLatestSha
 if gitIsClean or $TRY_CHECKOUT_IF_DIRTY; then
   checkoutGit
 fi
 
-getLatestSha
 createSecret
 if chartInstalled; then
   echo "== Chart ${SERVICE_NAME}-${LOCALDEV_BRANCH} already exists, please delete manually if you want it reinstalled =="

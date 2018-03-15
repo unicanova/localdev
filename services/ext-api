@@ -1,5 +1,5 @@
 export SERVICE_NAME=ext-api
-export LOCALDEV_BRANCH=master
+export LOCALDEV_BRANCH=localdev
 export GIT_REPO_PROJECT_BASE=git@gitlab.gruzer.ru:apps
 export LOCALDEV_USERNAME=bagart
 # export COMMIT_SHA=
