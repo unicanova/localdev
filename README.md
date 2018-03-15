@@ -6,6 +6,8 @@
     + [Требования](#Req);
     + [Переменные](#Vars);
     + [Определние сервисов для развертывания](#Def_services);
+    + [Настройка openvpn-client](#OVPN);
+    + [Монтирование](#Mount);
     + [Запуск](#Start);
 
 ## <a name="Quickstart"></a> Быстрый запуск
@@ -18,15 +20,15 @@
 
 В файле `config` необходимо определить переменные:
 
-| Variable name | Description | Example |
-| ------------- | ----------- | ------- |
-| LOCALDEV_REGISTRY_USERNAME | пользователь гитлаб репозитория | user |
-| LOCALDEV_REGISTRY_PASSWORD | пароль пользователя гитлаб репозитория | my_token |
-| LOCALDEV_REGISTRY_SERVER | адрес private docker registry server, используется для создания секрета, и скачивания образов | registry.gruzer.ru |
-| GITLAB_EMAIL | почта пользователя гитлаб репозитория | kkalynovskyi@gmail.com |
-| KUBECTL_VERSION | желаямая версия kubectl | v1.9.3 |
-| MINIKUBE_VERSION | желаемая версия minikube | latest |
-| MINIKUBE_VM_DRIVER | драйвер для виртуальной машины | virtualbox |
+| Variable name | Description | Required | Example |
+| ------------- | ----------- | -------- | ------- |
+| LOCALDEV_REGISTRY_USERNAME | пользователь гитлаб репозитория | Да |user |
+| LOCALDEV_REGISTRY_PASSWORD | пароль пользователя гитлаб репозитория | Да | my_token |
+| LOCALDEV_REGISTRY_SERVER | адрес private docker registry server, используется для создания секрета, и скачивания образов | Да | registry.gruzer.ru |
+| GITLAB_EMAIL | почта пользователя гитлаб репозитория | Да | kkalynovskyi@gmail.com |
+| KUBECTL_VERSION | желаямая версия kubectl | Нет | v1.9.3 |
+| MINIKUBE_VERSION | желаемая версия minikube | Нет | latest |
+| MINIKUBE_VM_DRIVER | драйвер для виртуальной машины | Нет | virtualbox |
 
 ### <a name="Def_services"></a> Определние сервисов для развертывания
 Для установки сервиса в локально развернутом кубернетесе, необходимо в директории `services` создать файл и определить в нем переменные:
@@ -39,6 +41,14 @@
 | LOCALDEV_USERNAME | Имя пользователя, которое будет использовано в `helm` чарте, может быть необходимо какому-либо сервису | Да | yes |
 | REMOTE_CLUSTER | Доменное имя, куда трафик должен быть перенаправлен | Нет | cluster.local |
 | LOCALDEV_FAILOVER_BRANCH | То же самое что и LOCALDEV_BRANCH, но используется на удаленном кластере | Если REMOTE_CLUSTER опеределен | master |
+
+### <a name="OVPN"></a> Настройка openvpn-client
+
+Необходимо в папку `./secrets/` поместить конфигурационный файл для openvpn-client. 
+
+### <a name="Mount"></a> Монтирование 
+
+При запуске `minikube` содержимое папки `~/.localdev/services/` автоматически будет смонтировано на `minikube` в директорию `/home/services/`. Необходимые файлы приложений можно редактировать в папке `~/.localdev/services/`.
 
 ### <a name="Start"></a> Запуск
 
