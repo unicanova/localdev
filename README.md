@@ -21,11 +21,11 @@ $ git clone git@github.com:unicanova/localdev.git
 ```sh
 $ cd localdev
 ```
-3. В файле `config` необходимо указать пользователя гитлаб репозитория, его почту, пароль и private docker registry server (см .[Переменные](#Vars))
+3. В файле `config` необходимо указать пользователя гитлаб репозитория, его почту, пароль и private docker registry server (см .[Переменные](#Vars)).
 
-4. В файле `./services/ext-api` и отредактированть переменные (см. [Определние сервисов для развертывания](#Def_services))
+4. В файле `./services/ext-api` и отредактированть переменные (см. [Определние сервисов для развертывания](#Def_services)).
 
-5. Создать папку с названием `secrets` и поместить в нее конфигурационный файл для openvpn-client
+5. Создать папку с названием `secrets` и поместить в нее конфигурационный файл для openvpn-client `secrets/config.conf`:
 ```sh
 $ mkdir secrets
 ```
@@ -68,7 +68,7 @@ $ ./deploy.sh
 
 ### <a name="OVPN"></a> Настройка openvpn-client
 
-Необходимо в папку `./secrets/` поместить конфигурационный файл для openvpn-client. 
+Необходимо в папку `./secrets/` поместить конфигурационный файл для openvpn-client `secrets/config.conf`. 
 
 ### <a name="Mount"></a> Монтирование 
 
