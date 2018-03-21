@@ -15,6 +15,7 @@ export MINIKUBE_VM_DRIVER=hyperv
 
 export MINIKUB_START_OPTS='--hyperv-virtual-switch "ext"'
 
+#need env $PATH
 export INSTALL_DIR=/c/dev/docker/
 export HELM_INSTALL_DIR=/c/dev/docker/
 
