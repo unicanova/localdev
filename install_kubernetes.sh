@@ -8,6 +8,8 @@
 : ${KUBECTL:="/usr/local/bin/kubectl"}
 
 KUBECTL_OPTS=${KUBECTL_OPTS:-}
+DOCKERD_FIXED_CIDR=${DOCKERD_FIXED_CIDR:-'172.21.0.0/24'}
+DOCKERD_BIP=${DOCKERD_BIP:-'172.21.0.1/24'}
 MINIKUBE_CLUSTER_STATUS=$(minikube status | awk '/cluster/ {print $2}')
 
 set -e
@@ -55,6 +57,8 @@ function install_minikube() {
     mkdir -p -m 0777 $local_mount_dir
     chmod -R 0755 $local_mount_dir
     minikube start --vm-driver "${MINIKUBE_VM_DRIVER}" \
+                   --docker-opt "fixed-cidr=${DOCKERD_FIXED_CIDR}" \
+                   --docker-opt "bip=${DOCKERD_BIP}" \
                    --feature-gates=CustomPodDNS=true \
                    --dns-domain "${MINIKUBE_DNS_DOMAIN}" \
                    --mount-string ${local_mount_dir}:${remote_mount_dir} \
@@ -75,10 +79,33 @@ function create_openvpn_tunnel() {
   return 1
 }
 
+function getKubeIps {
+  KUBE_DNS_IP=$(${KUBECTL} get service -l k8s-app=kube-dns -n kube-system | awk 'NR>1 {print $3}')
+  MINIKUBE_IP=$(minikube ip)
+}
+
+function setRoutes {
+  getKubeIps
+  echo "INFO == Trying to set routes to minikube container and kubernetes dns =="
+  case "$OS" in
+    linux*) 
+      runAsRoot ip r add $KUBE_DNS_IP via $MINIKUBE_IP && \
+      runAsRoot ip r add $DOCKERD_FIXED_CIDR via $MINIKUBE_IP && \
+      echo "INFO == Routes changed, now you can configure your host machine to use K8s dns server at $KUBE_DNS_IP ==" && \
+      return 0
+      ;;
+  esac
+  return 4 
+}
+
+source lib/_facts.sh
+
 ### Install and configure kubernetes ###
 install_minikube
 sleep 15
 echo Enabling coredns addon
 minikube addons enable coredns
+minikube addons enable ingress
 create_openvpn_tunnel
 update_core_dns_plugin
+setRoutes

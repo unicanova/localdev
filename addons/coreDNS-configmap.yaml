@@ -5,13 +5,13 @@ data:
         errors
         log
         health
-        kubernetes . {
+        proxy . 8.8.8.8
+        kubernetes dev.local {
             pods insecure
             upstream /etc/resolv.conf
             fallthrough
         }
         proxy cluster.local 192.168.0.10:53
-        proxy . /etc/resolv.conf
         cache 30
     }
 kind: ConfigMap
