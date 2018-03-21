@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 BASE_GIT_DIR=${BASE_GIT_DIR:-~/.localdev}
-HELM_BIN=${HELM_BIN:-/usr/local/bin/helm}
+HELM_BIN=${HELM_BIN:-helm}
 _REPO_HELM_CHART_DIR=.helm
 LOCALDEV_BRANCH=${LOCALDEV_BRANCH:-master}
-: ${KUBECTL:="/usr/local/bin/kubectl"}
+: ${KUBECTL:="kubectl"}
 
 function installChart() {
   CHART_ARGS="--set global.release=${LOCALDEV_BRANCH} \

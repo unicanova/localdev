@@ -5,10 +5,11 @@
 
 : ${OPENVPN_DAEMONSET_YAML:="daemonsets/OpenVPN-daemonset.yaml"}
 : ${COREDNS_CONFIG_YAML:="addons/coreDNS-configmap.yaml"}
-: ${KUBECTL:="/usr/local/bin/kubectl"}
+: ${KUBECTL:="kubectl"}
 
 KUBECTL_OPTS=${KUBECTL_OPTS:-}
 MINIKUBE_CLUSTER_STATUS=$(minikube status | awk '/cluster/ {print $2}')
+MINIKUB_START_OPTS=${KUBECTL_START_OPTS:-}
 
 set -e
 
@@ -55,6 +56,7 @@ function install_minikube() {
     mkdir -p -m 0777 $local_mount_dir
     chmod -R 0755 $local_mount_dir
     minikube start --vm-driver "${MINIKUBE_VM_DRIVER}" \
+                   "${MINIKUB_START_OPTS}" \
                    --feature-gates=CustomPodDNS=true \
                    --dns-domain "${MINIKUBE_DNS_DOMAIN}" \
                    --mount-string ${local_mount_dir}:${remote_mount_dir} \
@@ -67,7 +69,7 @@ function install_minikube() {
 function create_openvpn_tunnel() {
   echo "== Configure daemonset with OpenVPN client =="
   if ! ${KUBECTL} --namespace=kube-system get secret openvpn-conf -o=jsonpath='{.metadata.name}'; then
-    ${KUBECTL} create --namespace "kube-system" secret generic openvpn-conf --from-file ${OPENVPN_CONFIG_FILE:-"secrets/config.conf"} || \
+    ${KUBECTL} create --namespace "kube-system" secret generic openvpn-conf --from-file ${OPENVPN_CONFIG_FILE:-"secrets/config.ovpn"} || \
       echo "ERROR == Failed to create secert from openvpn config file at ${OPENVPN_CONFIG_FILE} =="
   fi
   ${KUBECTL} create -f daemonsets/OpenVPN-daemonset.yaml && \
