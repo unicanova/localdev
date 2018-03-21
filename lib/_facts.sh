@@ -2,11 +2,13 @@
 
 runAsRoot() {
   local CMD="$*"
-  
-  if [ $EUID -ne 0 ]; then
+
+  if [[ "$OS" == "windows" ]]; then
+    echo "skip sudo for windows"
+  elif [ $EUID -ne 0 ]; then
     CMD="sudo $CMD"
   fi
-  
+
   $CMD
 }
 

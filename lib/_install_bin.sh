@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
 installFile() {
-  if [ $HASH_TYPE == "md5" ]; then
+
+  if [[ "$HASH_TYPE" == "md5" ]]; then
     local sum=$(md5sum ${TMP_FILE} | awk '{print $1}')
-  else [ $HASH_TYPE == "sha256" ]
+  else [[ "$HASH_TYPE" == "sha256" ]]
     local sum=$(sha256sum ${TMP_FILE} | awk '{print $1}')
   fi
 
   local expected_sum=$(cat ${SUM_FILE})
   if [ "$sum" != "$expected_sum" ]; then
+  echo "!checksum: $sum != $expected_sum"
     exit 1
   fi
 
@@ -24,6 +26,7 @@ checkInstalledVersion() {
     elif [[  "${DOWNLOAD_BINARY}" == "kubectl" ]]; then 
       local version=$(kubectl version --client=true --short=true | awk -F': ' '{print $2}')
     fi
+
     if [[ "$version" == "$BINARY_VERSION" ]]; then
       echo "${DOWNLOAD_BINARY} ${version} is already ${BINARY_VERSION}"
       return 0

@@ -1,0 +1,21 @@
+#export REMOTE_DOMAINS=
+
+# Section to authenticate against registry in gitlab
+export LOCALDEV_REGISTRY_USERNAME="bagart"
+export LOCALDEV_REGISTRY_PASSWORD="my_pass"
+export LOCALDEV_REGISTRY_SERVER="registry.gruzer.ru"
+export GITLAB_EMAIL="@gmail.com"
+
+#export OPENVPN_CONFIG_FILE=secrets/config.ovpn
+
+## More information can be found at https://github.com/kubernetes/minikube/blob/master/docs/drivers.md
+#export MINIKUBE_VM_DRIVER=hyperv
+#export MINIKUBE_VM_DRIVER=virtualbox
+
+# sudo apt install libvirt-bin qemu-kvm;sudo usermod -a -G libvirtd $(whoami);newgrp libvirtd
+# curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && chmod +x docker-machine-driver-kvm2 && sudo mv docker-machine-driver-kvm2 /usr/bin/
+export MINIKUBE_VM_DRIVER=kvm2
+
+# Binary Configs
+export KUBECTL_VERSION=v1.9.3
+export MINIKUBE_VERSION=latest
