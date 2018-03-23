@@ -111,6 +111,7 @@ initOS
 install_minikube
 sleep 15
 echo Enabling coredns addon
+minikube addons disable kube-dns
 minikube addons enable coredns
 minikube addons enable ingress
 create_openvpn_tunnel
