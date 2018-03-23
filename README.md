@@ -15,21 +15,27 @@
 
 1. Cклонировать репозиторий:
 ```sh
-$ git clone git@github.com:unicanova/localdev.git
+$ git clone git@github.com:bagart/localdev.git
 ```
 2. Перейти в склонированную папку:
 ```sh
 $ cd localdev
 ```
-3. В файле `config` необходимо указать пользователя гитлаб репозитория, его почту, пароль и private docker registry server (см .[Переменные](#Vars)).
 
-4. В файле `./services/ext-api` и отредактированть переменные (см. [Определние сервисов для развертывания](#Def_services)).
-
-5. Создать папку с названием `secrets` и поместить в нее конфигурационный файл для openvpn-client `secrets/config.conf`:
-```sh
-$ mkdir secrets
+3. Установить конфиг для linux или windows
+```bash
+cp config.windows config
+#cp config.linux config
 ```
-6. 3апустить выполнение скрипта:
+4. Настроить конфиг
+Указать пользователя гитлаб репозитория, почту, пароль и private docker registry server (см .[Переменные](#Vars)).
+
+5. В файле `./services/ext-api` и отредактированть переменные (см. [Определние сервисов для развертывания](#Def_services)).
+
+6. Положзить в директорию `secrets` файл настрйоки vpn в облачную среду
+для openvpn-client `secrets/config.ovpn`:
+
+7. 3апустить выполнение скрипта:
 ```sh
 $ ./deploy.sh
 ```
@@ -44,15 +50,15 @@ $ ./deploy.sh
 
 В файле `config` необходимо определить переменные:
 
-| Variable name | Description | Required | Example |
-| ------------- | ----------- | -------- | ------- |
-| LOCALDEV_REGISTRY_USERNAME | пользователь гитлаб репозитория | Да |user |
-| LOCALDEV_REGISTRY_PASSWORD | пароль пользователя гитлаб репозитория | Да | my_token |
-| LOCALDEV_REGISTRY_SERVER | адрес private docker registry server, используется для создания секрета, и скачивания образов | Да | registry.gruzer.ru |
-| GITLAB_EMAIL | почта пользователя гитлаб репозитория | Да | kkalynovskyi@gmail.com |
-| KUBECTL_VERSION | желаямая версия kubectl | Нет | v1.9.3 |
-| MINIKUBE_VERSION | желаемая версия minikube | Нет | latest |
-| MINIKUBE_VM_DRIVER | драйвер для виртуальной машины | Нет | virtualbox |
+| Variable name              | Description                            | Required | Example |
+| -------------------------- | -------------------------------------- | --------                              | ------- |
+| LOCALDEV_REGISTRY_USERNAME | пользователь гитлаб репозитория        | Да       |user |
+| LOCALDEV_REGISTRY_PASSWORD | пароль пользователя гитлаб репозитория | Да       | my_token |
+| LOCALDEV_REGISTRY_SERVER   | private docker registry server, используется для создания секрета, и скачивания образов | Да | registry.gruzer.ru |
+| GITLAB_EMAIL               | почта пользователя гитлаб репозитория  | Да       | @gmail.com |
+| KUBECTL_VERSION            | желаямая версия kubectl                | Нет      | v1.9.3     |
+| MINIKUBE_VERSION           | желаемая версия minikube               | Нет      | latest     |
+| MINIKUBE_VM_DRIVER         | драйвер для виртуальной машины         | Нет      | virtualbox |
 
 ### <a name="Def_services"></a> Определние сервисов для развертывания
 Для установки сервиса в локально развернутом кубернетесе, необходимо в директории `services` создать файл и определить в нем переменные:
@@ -65,10 +71,6 @@ $ ./deploy.sh
 | LOCALDEV_USERNAME | Имя пользователя, которое будет использовано в `helm` чарте, может быть необходимо какому-либо сервису | Да | yes |
 | REMOTE_CLUSTER | Доменное имя, куда трафик должен быть перенаправлен | Нет | cluster.local |
 | LOCALDEV_FAILOVER_BRANCH | То же самое что и LOCALDEV_BRANCH, но используется на удаленном кластере | Если REMOTE_CLUSTER опеределен | master |
-
-### <a name="OVPN"></a> Настройка openvpn-client
-
-Необходимо в папку `./secrets/` поместить конфигурационный файл для openvpn-client `secrets/config.conf`. 
 
 ### <a name="Mount"></a> Монтирование 
 

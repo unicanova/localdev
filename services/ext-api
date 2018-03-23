@@ -3,5 +3,6 @@ export LOCALDEV_BRANCH=localdev
 export GIT_REPO_PROJECT_BASE=git@gitlab.gruzer.ru:apps
 export LOCALDEV_USERNAME=bagart
 # export COMMIT_SHA=
-#export LOCALDEV_FAILOVER_BRANCH=master ## Remote branch to be used for failover
 export REMOTE_CLUSTER=cluster.local # If defined make sure to define LOCALDEV_FAILOVER_BRANCH variable
+
+export LOCALDEV_FAILOVER_BRANCH=infra ## Remote branch to be used for failover
