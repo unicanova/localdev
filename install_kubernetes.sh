@@ -39,10 +39,10 @@ function update_core_dns_plugin() {
   if create_resource_from_string "$(cat ${COREDNS_CONFIG_YAML})" 2 "20" "core-dns-configmap" "kube-system"; then
     sleep 70
     local tries=20
-    local dns_pod="$(kubectl get pod -l k8s-app=kube-dns -n kube-system -o=jsonpath='{.items[0].metadata.name}')" && \
+    local dns_pod="$($KUBECTL get pod -l k8s-app=kube-dns -n kube-system -o=jsonpath='{.items[0].metadata.name}')" && \
     echo "== Restarting coredns service =="
     while [ ${tries} -gt 0 ]; do
-      kubectl -n kube-system exec "$dns_pod" -- kill -SIGUSR1 1 && \
+      $KUBECTL -n kube-system exec "$dns_pod" -- kill -SIGUSR1 1 && \
         return 0;
       let tries=tries-1;
       sleep 10;
@@ -72,7 +72,7 @@ function install_minikube() {
                    --mount && \
       echo "== Successfully started Minikube ==" && return 0
   fi
-  exit 1
+  return 1
 }
 
 function create_openvpn_tunnel() {

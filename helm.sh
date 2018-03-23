@@ -21,16 +21,16 @@ function installChart() {
                     --namespace "${LOCALDEV_BRANCH}" ${CHART_ARGS} \
                     "${BASE_GIT_DIR}/${SERVICE_NAME}/${_REPO_HELM_CHART_DIR}" && \
                     return 0;
-  exit 1;
+  return 1;
 }
 
 function chartInstalled() {
-  helm get "${SERVICE_NAME}"-"${LOCALDEV_BRANCH}" > /dev/null 2>&1
+  $HELM_BIN get "${SERVICE_NAME}"-"${LOCALDEV_BRANCH}" > /dev/null 2>&1
   rc=$?
   case $rc in
     1|0) return $rc
     ;;
-    *) echo "== Could not determine status of helm chart =="; exit $rc
+    *) echo "== Could not determine status of helm chart =="; return $rc
     ;;
   esac
 }
@@ -100,7 +100,7 @@ function createSecret() {
 function verifyHelm() {
   if [ -z "$SERVICE_NAME" ]; then
     echo "== Service name to be deployed is not defined =="
-    exit 3
+    return 3
   fi
   return 0
 }
