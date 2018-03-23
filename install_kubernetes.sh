@@ -107,6 +107,7 @@ function setRoutes {
 
 source lib/_facts.sh
 
+initOS
 ### Install and configure kubernetes ###
 install_minikube
 sleep 15
