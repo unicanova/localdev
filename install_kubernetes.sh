@@ -13,8 +13,6 @@ DOCKERD_BIP=${DOCKERD_BIP:-'172.21.0.1/24'}
 MINIKUBE_CLUSTER_STATUS=$(minikube status | awk '/cluster/ {print $2}')
 MINIKUB_START_OPTS=${KUBECTL_START_OPTS:-}
 
-set -e
-
 # $1 string with json or yaml.
 # $2 count of tries to start the addon.
 # $3 delay in seconds between two consecutive tries
@@ -40,11 +38,18 @@ function create_resource_from_string() {
 function update_core_dns_plugin() {
   if create_resource_from_string "$(cat ${COREDNS_CONFIG_YAML})" 2 "20" "core-dns-configmap" "kube-system"; then
     sleep 70
+    local tries=20
     local dns_pod="$(kubectl get pod -l k8s-app=kube-dns -n kube-system -o=jsonpath='{.items[0].metadata.name}')" && \
-      kubectl -n kube-system exec $dns_pod -- kill -SIGUSR1 1 && \
-        return 0
+    echo "== Restarting coredns service =="
+    while [ ${tries} -gt 0 ]; do
+      kubectl -n kube-system exec "$dns_pod" -- kill -SIGUSR1 1 && \
+        return 0;
+      let tries=tries-1;
+      sleep 10;
+    done
+
   fi
-  exit 1
+  return 1
 }
 
 function install_minikube() {
