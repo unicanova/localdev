@@ -96,9 +96,8 @@ function setRoutes {
   echo "INFO == Trying to set routes to minikube container and kubernetes dns =="
   case "$OS" in
     linux*) 
-      runAsRoot ip r add $KUBE_DNS_IP via $MINIKUBE_IP && \
-      runAsRoot ip r add $DOCKERD_FIXED_CIDR via $MINIKUBE_IP && \
-      echo "INFO == Routes changed, now you can configure your host machine to use K8s dns server at $KUBE_DNS_IP ==" && \
+      runAsRoot ip r add $KUBE_DNS_IP via $MINIKUBE_IP
+      runAsRoot ip r add $DOCKERD_FIXED_CIDR via $MINIKUBE_IP
       return 0
       ;;
   esac
