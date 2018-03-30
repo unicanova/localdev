@@ -78,7 +78,7 @@ function install_minikube() {
 function create_openvpn_tunnel() {
   echo "== Configure daemonset with OpenVPN client =="
   if ! ${KUBECTL} --namespace=kube-system get secret openvpn-conf -o=jsonpath='{.metadata.name}'; then
-    ${KUBECTL} create --namespace "kube-system" secret generic openvpn-conf --from-file ${OPENVPN_CONFIG_FILE:-"secrets/config.ovpn"} || \
+    ${KUBECTL} create --namespace "kube-system" secret generic openvpn-conf --from-file ${OPENVPN_CONFIG_FILE:-"secrets/config.conf"} || \
       echo "ERROR == Failed to create secert from openvpn config file at ${OPENVPN_CONFIG_FILE} =="
   fi
   ${KUBECTL} create -f daemonsets/OpenVPN-daemonset.yaml && \
